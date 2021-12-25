@@ -8,7 +8,6 @@
     </div>
   </div>
 </template>
-
 <script>
 export default {
   props: {
@@ -27,6 +26,7 @@ export default {
   text-align: center;
   padding: 15px 0 30px;
   font-size: 12px;
+  border-bottom: 8px solid #eee;
 }
 .recommend-item {
   flex: 1;
