@@ -1,3 +1,4 @@
+/* eslint-disable no-dupe-keys */
 module.exports = {
   configureWebpack: {
     resolve: {
@@ -9,5 +10,6 @@ module.exports = {
 
       }
     }
-  }
+  },
+
 }
