@@ -2,13 +2,14 @@
   <div id="home">
     <Navbar class="home-nav"><div slot="center">购物街</div></Navbar>
 
-    <Scroll class="content">
+    <Scroll class="content" ref="scroll">
       <HomeSwiper :banners="banners" />
       <recommendView :recommends="recommends" />
       <feature />
       <TabControl @tabClick="tabClick1" :titles="['流行', '新款', '精选']" class="Tab-control" />
       <Goodlist :goods="showGoods" />
     </Scroll>
+    <BackTop @click.native="BackTop1" />
   </div>
 </template>
 <script>
@@ -20,9 +21,10 @@ import Navbar from 'components/common/navbar/NavBar'
 import TabControl from 'components/content/tabControl/TabControl'
 import Goodlist from '../../components/content/goods/Goodslist.vue'
 import Scroll from 'components/common/scroll/Scroll'
+import BackTop from 'components/content/backTop/BackTop'
 
 import { getHomeMultidate, getHomeGoods } from 'network/home'
-
+// import { getUsersInfo } from 'network/mock'
 export default {
   name: 'Home',
   components: {
@@ -32,7 +34,8 @@ export default {
     Navbar,
     TabControl,
     Goodlist,
-    Scroll
+    Scroll,
+    BackTop
   },
   data() {
     return {
@@ -58,6 +61,9 @@ export default {
     this.getHomeGoods('pop')
     this.getHomeGoods('new')
     this.getHomeGoods('sell')
+    // getUsersInfo().then(res => {
+    //   console.log(res)
+    // })
   },
   methods: {
     // 事件监听
@@ -86,6 +92,9 @@ export default {
         this.goods[type].list.push(...res.data.list)
         this.goods[type].page += 1
       })
+    },
+    BackTop1() {
+      this.$refs.scroll.scrollTo(0, 0, 500)
     }
   }
 }
@@ -93,6 +102,8 @@ export default {
 <style scoped>
 #home {
   padding-top: 44px;
+  height: 100vh;
+  position: relative;
 }
 .home-nav {
   background-color: var(--color-tint);
@@ -110,6 +121,16 @@ export default {
   z-index: 9;
 }
 .content {
-  height: 10px;
+  /* overflow: hidden; */
+
+  position: absolute;
+  top: 44px;
+  bottom: 49px;
+  left: 0;
+  right: 0;
+  /* height: calc(100% - 93px);
+  margin-top: 44px;
+
+  overflow: hidden; */
 }
 </style>
