@@ -2,14 +2,14 @@
   <div id="home">
     <Navbar class="home-nav"><div slot="center">购物街</div></Navbar>
 
-    <Scroll class="content" ref="scroll">
-      <HomeSwiper :banners="banners" />
+    <Scroll class="content" ref="scroll" :probeType="3" @scroll="contentscroll" :pullUpLoad="true">
+      <HomeSwiper :banners="banners" @Swiperitem="Swiperitem" />
       <recommendView :recommends="recommends" />
       <feature />
       <TabControl @tabClick="tabClick1" :titles="['流行', '新款', '精选']" class="Tab-control" />
       <Goodlist :goods="showGoods" />
     </Scroll>
-    <BackTop @click.native="BackTop1" />
+    <BackTop @click.native="BackTop1" v-show="isShowBackTop" />
   </div>
 </template>
 <script>
@@ -19,7 +19,7 @@ import feature from './childComps/FeatureView.vue'
 
 import Navbar from 'components/common/navbar/NavBar'
 import TabControl from 'components/content/tabControl/TabControl'
-import Goodlist from '../../components/content/goods/Goodslist.vue'
+import Goodlist from 'components/content/goods/Goodslist'
 import Scroll from 'components/common/scroll/Scroll'
 import BackTop from 'components/content/backTop/BackTop'
 
@@ -46,7 +46,8 @@ export default {
         new: { page: 0, list: [] },
         sell: { page: 0, list: [] }
       },
-      currentType: 'pop'
+      currentType: 'pop',
+      isShowBackTop: false
     }
   },
   computed: {
@@ -61,6 +62,12 @@ export default {
     this.getHomeGoods('pop')
     this.getHomeGoods('new')
     this.getHomeGoods('sell')
+
+    // 监听img加载完成
+    this.$bus.$on('imgageload', () => {
+      console.log('asasasas')
+      this.$refs.scroll.scroll.refresh()
+    })
     // getUsersInfo().then(res => {
     //   console.log(res)
     // })
@@ -80,6 +87,12 @@ export default {
           break
       }
     },
+    BackTop1() {
+      this.$refs.scroll.scrollTo(0, 0, 500)
+    },
+    contentscroll(position) {
+      this.isShowBackTop = -position.y > 1000
+    },
     getHomeMultidate() {
       getHomeMultidate().then(res => {
         this.banners = res.data.banner.list
@@ -91,17 +104,25 @@ export default {
       getHomeGoods(type, page).then(res => {
         this.goods[type].list.push(...res.data.list)
         this.goods[type].page += 1
+
+        // this.$refs.scroll.finishPullUp()
       })
     },
-    BackTop1() {
-      this.$refs.scroll.scrollTo(0, 0, 500)
+    // 监听轮播图加载完成
+    Swiperitem() {
+      this.$refs.scroll.scroll.refresh()
     }
+    // loadMore() {
+    //   console.log('1111111')
+    //   this.getHomeGoods(this.currentType)
+    //   this.$refs.scroll.scroll.refresh()
+    // }
   }
 }
 </script>
 <style scoped>
 #home {
-  padding-top: 44px;
+  /* padding-top: 44px; */
   height: 100vh;
   position: relative;
 }
@@ -122,7 +143,6 @@ export default {
 }
 .content {
   /* overflow: hidden; */
-
   position: absolute;
   top: 44px;
   bottom: 49px;

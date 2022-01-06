@@ -1,6 +1,6 @@
 <template>
   <div class="wrapper" ref="wrapper">
-    <div class="content">
+    <div>
       <slot></slot>
     </div>
   </div>
@@ -8,20 +8,41 @@
 
 <script>
 import BScroll from 'better-scroll'
+
 export default {
   data() {
     return {
       scroll: null
     }
   },
+  props: {
+    probeType: {
+      type: Number,
+      default: 0
+    },
+    pullUpLoad: {
+      type: Boolean,
+      default: false
+    }
+  },
   mounted() {
     this.scroll = new BScroll(this.$refs.wrapper, {
       click: true,
-      probeType: 3
+      probeType: this.probeType,
+      pullUpLoad: this.pullUpLoad
     })
-    // this.scroll.scrollTo(0, 0)
-    // this.scroll.on()
+
+    this.scroll.on('scroll', position => {
+      this.$emit('scroll', position)
+    })
+    // console.log(this.scroll.scrollerHeight)
   },
+  // this.scroll.on('pullingUp', () => {
+  //   this.$emit('pullingUp')
+  // })
+  // this.scroll.scrollTo(0, 0)
+  // this.scroll.on()
+
   // beforeDestroy() {
   //   //别忘了在页面销毁的时候 移除这个BScroll实例对象不然它会一直在内存中，占用资源
   //   this.scroll = null
@@ -30,6 +51,9 @@ export default {
     scrollTo(x, y, time = 300) {
       this.scroll.scrollTo(x, y, time)
     }
+    // finishPullUp() {
+    //   this.scroll.finishPullUp()
+    // }
   }
 }
 </script>
