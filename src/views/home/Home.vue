@@ -63,14 +63,16 @@ export default {
     this.getHomeGoods('new')
     this.getHomeGoods('sell')
 
-    // 监听img加载完成
-    this.$bus.$on('imgageload', () => {
-      console.log('asasasas')
-      this.$refs.scroll.scroll.refresh()
-    })
     // getUsersInfo().then(res => {
     //   console.log(res)
     // })
+  },
+  mounted() {
+    // 监听img加载完成
+    this.$bus.$on('imgageload', () => {
+      console.log(this.$refs.scroll.refresh)
+      this.$refs.scroll.refresh()
+    })
   },
   methods: {
     // 事件监听
@@ -110,7 +112,7 @@ export default {
     },
     // 监听轮播图加载完成
     Swiperitem() {
-      this.$refs.scroll.scroll.refresh()
+      this.$refs.scroll.refresh()
     }
     // loadMore() {
     //   console.log('1111111')

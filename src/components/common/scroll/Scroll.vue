@@ -35,8 +35,15 @@ export default {
     this.scroll.on('scroll', position => {
       this.$emit('scroll', position)
     })
-    // console.log(this.scroll.scrollerHeight)
   },
+  methods: {
+    scrollTo(x, y, time = 300) {
+      this.scroll && this.scroll.scrollTo && this.scroll.scrollTo(x, y, time)
+    },
+    refresh() {
+      this.scroll && this.scroll.refresh && this.scroll.refresh()
+    }
+  }
   // this.scroll.on('pullingUp', () => {
   //   this.$emit('pullingUp')
   // })
@@ -47,14 +54,10 @@ export default {
   //   //别忘了在页面销毁的时候 移除这个BScroll实例对象不然它会一直在内存中，占用资源
   //   this.scroll = null
   // }
-  methods: {
-    scrollTo(x, y, time = 300) {
-      this.scroll.scrollTo(x, y, time)
-    }
-    // finishPullUp() {
-    //   this.scroll.finishPullUp()
-    // }
-  }
+
+  // finishPullUp() {
+  //   this.scroll.finishPullUp()
+  // }
 }
 </script>
 
