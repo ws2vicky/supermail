@@ -5,7 +5,6 @@
     </div>
   </div>
 </template>
-
 <script>
 export default {
   props: {
@@ -23,7 +22,7 @@ export default {
   },
   methods: {
     itemClink(index) {
-      this.currentIndex = index
+      // this.currentIndex = index
       this.$emit('tabClick', index)
     }
   }

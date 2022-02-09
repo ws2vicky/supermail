@@ -19,13 +19,21 @@ export default {
       }
     }
   },
+  data() {
+    return {
+      isLoad: false
+    }
+  },
   components: {
     Swiper,
     SwiperItem
   },
   methods: {
     Swiperitem() {
-      this.$emit('Swiperitem')
+      if (!this.isLoad) {
+        this.$emit('Swiperitem')
+        this.isLoad = true
+      }
     }
   }
 }

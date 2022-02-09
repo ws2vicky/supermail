@@ -31,10 +31,17 @@ export default {
       probeType: this.probeType,
       pullUpLoad: this.pullUpLoad
     })
-
-    this.scroll.on('scroll', position => {
-      this.$emit('scroll', position)
-    })
+    if (this.probeType !== 0) {
+      this.scroll.on('scroll', position => {
+        this.$emit('scroll', position)
+        // console.log(-position.y, '----------', -this.scroll.y)
+      })
+    }
+    if (this.pullUpLoad) {
+      this.scroll.on('pullingUp', () => {
+        this.$emit('pullingUp')
+      })
+    }
   },
   methods: {
     scrollTo(x, y, time = 300) {
@@ -42,6 +49,9 @@ export default {
     },
     refresh() {
       this.scroll && this.scroll.refresh && this.scroll.refresh()
+    },
+    finishPullUp() {
+      this.scroll && this.scroll.finishPullUp && this.scroll.finishPullUp()
     }
   }
   // this.scroll.on('pullingUp', () => {

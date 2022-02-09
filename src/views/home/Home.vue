@@ -1,12 +1,12 @@
 <template>
   <div id="home">
     <Navbar class="home-nav"><div slot="center">购物街</div></Navbar>
-
-    <Scroll class="content" ref="scroll" :probeType="3" @scroll="contentscroll" :pullUpLoad="true">
+    <TabControl @tabClick="tabClick1" ref="TabControl1" :titles="['流行', '新款', '精选']" class="TabControl" v-show="isTabFixed" />
+    <Scroll class="content" ref="scroll" @pullingUp="loadMore" :probeType="3" @scroll="contentscroll" :pullUpLoad="true">
       <HomeSwiper :banners="banners" @Swiperitem="Swiperitem" />
       <recommendView :recommends="recommends" />
       <feature />
-      <TabControl @tabClick="tabClick1" :titles="['流行', '新款', '精选']" class="Tab-control" />
+      <TabControl @tabClick="tabClick1" ref="TabControl2" :titles="['流行', '新款', '精选']" class="Tab-control" :class="{ fixed: isTabFixed }" />
       <Goodlist :goods="showGoods" />
     </Scroll>
     <BackTop @click.native="BackTop1" v-show="isShowBackTop" />
@@ -24,6 +24,7 @@ import Scroll from 'components/common/scroll/Scroll'
 import BackTop from 'components/content/backTop/BackTop'
 
 import { getHomeMultidate, getHomeGoods } from 'network/home'
+import { debounce } from 'common/utils'
 // import { getUsersInfo } from 'network/mock'
 export default {
   name: 'Home',
@@ -47,13 +48,26 @@ export default {
         sell: { page: 0, list: [] }
       },
       currentType: 'pop',
-      isShowBackTop: false
+      isShowBackTop: false,
+      tabOffsetTop: 0,
+      isTabFixed: false,
+      saveY: 0
     }
   },
   computed: {
     showGoods() {
       return this.goods[this.currentType].list
     }
+  },
+  activated() {
+    this.$refs.scroll.scrollTo(0, this.saveY, 0)
+    // this.$refs.scroll.startTimer()
+    this.$refs.scroll.refresh()
+  },
+  deactivated() {
+    this.saveY = this.$refs.scroll.scroll.y
+    // this.$refs.scroll.stopTimer()
+    console.log()
   },
   created() {
     // 网络请求
@@ -62,16 +76,12 @@ export default {
     this.getHomeGoods('pop')
     this.getHomeGoods('new')
     this.getHomeGoods('sell')
-
-    // getUsersInfo().then(res => {
-    //   console.log(res)
-    // })
   },
   mounted() {
     // 监听img加载完成
-    this.$bus.$on('imgageload', () => {
-      console.log(this.$refs.scroll.refresh)
-      this.$refs.scroll.refresh()
+    const refresh = debounce(this.$refs.scroll.refresh, 500)
+    this.$bus.$off('imgageload').$on('imgageload', () => {
+      refresh()
     })
   },
   methods: {
@@ -88,13 +98,17 @@ export default {
           this.currentType = 'sell'
           break
       }
+      this.$refs.TabControl1.currentIndex = index
+      this.$refs.TabControl2.currentIndex = index
     },
     BackTop1() {
       this.$refs.scroll.scrollTo(0, 0, 500)
     },
     contentscroll(position) {
       this.isShowBackTop = -position.y > 1000
+      this.isTabFixed = -position.y > this.tabOffsetTop
     },
+    // 网络请求方法
     getHomeMultidate() {
       getHomeMultidate().then(res => {
         this.banners = res.data.banner.list
@@ -106,19 +120,22 @@ export default {
       getHomeGoods(type, page).then(res => {
         this.goods[type].list.push(...res.data.list)
         this.goods[type].page += 1
-
-        // this.$refs.scroll.finishPullUp()
+        this.$refs.scroll.finishPullUp()
       })
     },
     // 监听轮播图加载完成
     Swiperitem() {
-      this.$refs.scroll.refresh()
+      // this.$refs.scroll.refresh()
+      // const refresh = debounce(this.$refs.scroll.refresh)
+      // refresh()
+      this.tabOffsetTop = this.$refs.TabControl2.$el.offsetTop
+      console.log(this.tabOffsetTop)
+    },
+    loadMore() {
+      var a = {}
+      console.log('111', a)
+      this.getHomeGoods(this.currentType)
     }
-    // loadMore() {
-    //   console.log('1111111')
-    //   this.getHomeGoods(this.currentType)
-    //   this.$refs.scroll.scroll.refresh()
-    // }
   }
 }
 </script>
@@ -131,20 +148,20 @@ export default {
 .home-nav {
   background-color: var(--color-tint);
   color: #fff;
-
+  /* 
   position: fixed;
   right: 0;
   left: 0;
   top: 0;
-  z-index: 9;
+  z-index: 9; */
 }
-.Tab-control {
+/* .Tab-control {
   position: sticky;
   top: 44px;
   z-index: 9;
-}
+} */
 .content {
-  /* overflow: hidden; */
+  overflow: hidden;
   position: absolute;
   top: 44px;
   bottom: 49px;
@@ -154,5 +171,16 @@ export default {
   margin-top: 44px;
 
   overflow: hidden; */
+}
+/* .fixed {
+  position: fixed;
+  top: 44px;
+  right: 0;
+  left: 0;
+  z-index: 9;
+} */
+.TabControl {
+  position: relative;
+  z-index: 9;
 }
 </style>

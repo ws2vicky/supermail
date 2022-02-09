@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
-import router from './router/index'
-
+import router from './router'
+Vue.config.devtools = true;
 Vue.config.productionTip = false
 Vue.prototype.$bus = new Vue()
 
